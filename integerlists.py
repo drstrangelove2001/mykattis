@@ -8,8 +8,10 @@ for _ in range(Q):
     lst = [int(x) for x in nums.split(',') if x]
     arr = deque(lst)
     fwd = True
+    err = False
     for move in seq:
         if move == 'D' and not arr:
+            err = True
             break
         elif move == 'D':
             if fwd:
@@ -18,6 +20,6 @@ for _ in range(Q):
                 arr.pop()
         elif move == 'R':
             fwd = not fwd
-    if not fwd and arr:
+    if not fwd and not err:
         arr.reverse()
-    print(str(list(arr)).replace(' ','') if arr else 'error')
+    print(str(list(arr)).replace(' ','') if not err else 'error')
