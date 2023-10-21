@@ -1,3 +1,5 @@
+# Kattis score: 79/100, using counting sort.
+
 Q = int(input())
 for _ in range(Q):
     N = int(input())
