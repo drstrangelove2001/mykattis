@@ -1,11 +1,12 @@
+import sys
 from collections import defaultdict
-N = int(input())
+N = int(sys.stdin.readline())
 code = defaultdict(lambda: list())
 variables = defaultdict(lambda: 0)
 code_at_level = defaultdict(lambda: list())
 level = 0
 for _ in range(N):
-    line = input().split()
+    line = sys.stdin.readline().split()
     if line[0] == 'DECLARE':
         var,typ = line[1],line[2]
         variables[var] = typ
