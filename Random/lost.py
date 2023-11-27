@@ -1,39 +1,39 @@
-#Incorrect - dont refer!
-
 from sys import stdin
-from collections import defaultdict
+from collections import defaultdict, deque
 from math import inf, isinf
-import heapq
+
 n,m = map(int, stdin.readline().split())
-langs = ['English'] + stdin.readline().split()
+langs = stdin.readline().split()
 lang_AL = defaultdict(list)
-cost_matrix = defaultdict(lambda: inf)
-cost_matrix['English'] = 0
-translated = defaultdict(lambda: False)
-lang_queue = []
+
 for _ in range(m):
     a,b,c = stdin.readline().split()
-    if not translated[b]:
-        lang_AL[a].append((b,int(c)))
-    if a == 'English':
-        cost_matrix[b] = 0
-        translated[b] = True
-        heapq.heappush(lang_queue, (0, b))
+    lang_AL[a].append((b,int(c)))
+    lang_AL[b].append((a,int(c)))
+
+lang_queue = deque(['English'])
+
+cost_matrix = defaultdict(lambda: inf)
+level = defaultdict(lambda: inf)
+
+cost_matrix['English'] = level['English'] = 0
+
 while lang_queue:
-    cost, lang = heapq.heappop(lang_queue)
-    if cost > cost_matrix[lang]:
-        continue
-    for translated_lang, cost_of_translation in lang_AL[lang]:
-        if cost_matrix[translated_lang] > cost_matrix[lang] + cost_of_translation:
-            cost_matrix[translated_lang] = cost_matrix[lang] + cost_of_translation
-            heapq.heappush(lang_queue, (cost_matrix[translated_lang], translated_lang))
+    lang = lang_queue.popleft()
+    for tlang, tcost in lang_AL[lang]:
+        if isinf(level[tlang]):
+            level[tlang] = level[lang] + 1
+            cost_matrix[tlang] = tcost
+            lang_queue.append(tlang)
+        if level[tlang] == level[lang] + 1:
+            cost_matrix[tlang] = min(cost_matrix[tlang], tcost)
+
+imp = False
 total_cost = 0
-for lang, costt in lang_AL['English']:
-    total_cost += costt
-impossible = False
-for i in range(1,n+1):
-    if isinf(cost_matrix[langs[i]]):
-        impossible = True
+for lang in langs:
+    if isinf(level[lang]):
+        imp = True
         break
-    total_cost += cost_matrix[langs[i]]
-print(total_cost if not impossible else 'Impossible')
+    else:
+        total_cost += cost_matrix[lang]
+print(total_cost if not imp else 'Impossible')
